@@ -1,8 +1,112 @@
 #!/bin/bash
 # Cloud Foundry CLI autocomplete script for bash
 
+_deleteLocalCache() {
+    rm -rf ~/cf.cache/*
+}
+
+_loadCache() {
+    local command=$1
+
+    cat ~/cf.cache/"$command" 2>/dev/null
+}
+
+_saveCache() {
+    local command=$1
+    local value=$2
+
+    echo "$value" >~/cf.cache/"$command"
+}
+
+_execWithCache() {
+    local cacheName=$1
+    local command=$2
+    local value
+
+    value=$(_loadCache "$cacheName")
+
+    if [[ -z "$value" ]]; then
+        value=$(eval "$command")
+        _saveCache "$cacheName" "$value"
+    fi
+
+    echo "$value"
+}
+
 _cf_domains() {
-    cf domains | awk 'NR>3{print $1}'
+    _execWithCache 'domains' $'cf domains | awk \'NR>3{print $1}\''
+}
+
+_cf_apps() {
+    _execWithCache 'apps' $'cf apps | awk \'NR>3{print $1}\''
+}
+
+_scale() {
+
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+
+    if [[ "2" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "$(_cf_apps)" -- "$cur"))
+        return
+    fi
+
+    if [[ "3" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "--process" -- "$cur"))
+        return
+    fi
+
+    if [[ "4" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "web" -- "$cur"))
+        return
+    fi
+
+    if [[ "5" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "-i" -- "$cur"))
+        return
+    fi
+
+    if [[ "7" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "-m" -- "$cur"))
+        return
+    fi
+
+    if [[ "8" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "128M 256M 384M 512M 784M 1024M" -- "$cur"))
+        return
+    fi
+
+}
+
+_app() {
+
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+
+    if [[ "2" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "$(_cf_apps)" -- "$cur"))
+        return
+    fi
+
+}
+
+_create_app_manifest() {
+
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+
+    if [[ "2" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "$(_cf_apps)" -- "$cur"))
+        return
+    fi
+
+    if [[ "3" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "--hostname" -- "$cur"))
+        return
+    fi
+
+    if [[ "5" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "--path" -- "$cur"))
+        return
+    fi
+
 }
 
 _cf_map_route() {
@@ -10,8 +114,7 @@ _cf_map_route() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
 
     if [[ "2" -eq "$COMP_CWORD" ]]; then
-
-        COMPREPLY=($(compgen -W "$domains" -- "$cur"))
+        COMPREPLY=($(compgen -W "$(_cf_apps)" -- "$cur"))
         return
     fi
 
@@ -32,7 +135,6 @@ _cf_create_route() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
 
     if [[ "2" -eq "$COMP_CWORD" ]]; then
-
         COMPREPLY=($(compgen -W "$(_cf_domains)" -- "$cur"))
         return
     fi
@@ -69,11 +171,16 @@ _cf_main() {
     curl config oauth-token \
     add-plugin-repo remove-plugin-repo list-plugin-repos repo-plugins plugins install-plugin uninstall-plugin \
     targets save-target set-target delete-target \
-    allow-space-ssh disallow-space-ssh enable-ssh disable-ssh \
+    allow-space-ssh disallow-space-ssh enable-ssh disable-ssh ssh \
+    delete-autocomplete-cache \
     " -- "$cur"))
 }
 
 _cf() {
+
+    if [[ ! -d ~/cf.cache ]]; then
+        mkdir ~/cf.cache
+    fi
 
     cmd="${COMP_WORDS[1]}"
 
@@ -85,6 +192,18 @@ _cf() {
     case "$cmd" in
     create-route) _cf_create_route ;;
     map-route) _cf_map_route ;;
+    create-app-manifest) _create_app_manifest ;;
+    start) _app ;;
+    stop) _app ;;
+    app) _app ;;
+    scale) _scale ;;
+    delete) _app ;;
+
+    ssh) _app ;;
+    enable-ssh) _app ;;
+    disable-ssh) _app ;;
+
+    delete-autocomplete-cache) _deleteLocalCache ;;
     *) ;; esac
 }
 
