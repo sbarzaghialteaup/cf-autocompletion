@@ -77,6 +77,22 @@ _scale() {
 
 }
 
+_logs() {
+
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+
+    if [[ "2" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "$(_cf_apps)" -- "$cur"))
+        return
+    fi
+
+    if [[ "3" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "--recent" -- "$cur"))
+        return
+    fi
+
+}
+
 _app() {
 
     local cur="${COMP_WORDS[COMP_CWORD]}"
@@ -98,12 +114,12 @@ _create_app_manifest() {
     fi
 
     if [[ "3" -eq "$COMP_CWORD" ]]; then
-        COMPREPLY=($(compgen -W "--hostname" -- "$cur"))
+        COMPREPLY=($(compgen -W "-p" -- "$cur"))
         return
     fi
 
-    if [[ "5" -eq "$COMP_CWORD" ]]; then
-        COMPREPLY=($(compgen -W "--path" -- "$cur"))
+    if [[ "4" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "manifest.yml" -- "$cur"))
         return
     fi
 
@@ -193,9 +209,11 @@ _cf() {
     create-route) _cf_create_route ;;
     map-route) _cf_map_route ;;
     create-app-manifest) _create_app_manifest ;;
+    push) _app ;;
     start) _app ;;
     stop) _app ;;
     app) _app ;;
+    logs) _logs ;;
     scale) _scale ;;
     delete) _app ;;
 
