@@ -1,0 +1,4 @@
+disable=SC3010
+
+#Prefer mapfile
+disable=SC2207
