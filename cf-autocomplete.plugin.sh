@@ -41,6 +41,10 @@ _cf_apps() {
     _execWithCache 'apps' $'cf apps | awk \'NR>3{print $1}\''
 }
 
+_cf_services() {
+    _execWithCache 'services' $'cf services | awk \'NR>3{print $1}\''
+}
+
 _scale() {
 
     local cur="${COMP_WORDS[COMP_CWORD]}"
@@ -167,6 +171,38 @@ _cf_create_route() {
 
 }
 
+_bind-service() {
+
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+
+    if [[ "2" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "$(_cf_apps)" -- "$cur"))
+        return
+    fi
+
+    if [[ "3" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "$(_cf_services)" -- "$cur"))
+        return
+    fi
+
+}
+
+_unbind-service() {
+
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+
+    if [[ "2" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "$(_cf_apps)" -- "$cur"))
+        return
+    fi
+
+    if [[ "3" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "$(_cf_services)" -- "$cur"))
+        return
+    fi
+
+}
+
 _cf_main() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     COMPREPLY=($(compgen -W " \
@@ -212,10 +248,14 @@ _cf() {
     push) _app ;;
     start) _app ;;
     stop) _app ;;
+    restart) _app ;;
+    restage) _app ;;
     app) _app ;;
     logs) _logs ;;
     scale) _scale ;;
     delete) _app ;;
+    bind-service) _bind-service ;;
+    unbind-service) _unbind-service ;;
 
     ssh) _app ;;
     enable-ssh) _app ;;
