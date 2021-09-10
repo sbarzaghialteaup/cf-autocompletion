@@ -203,6 +203,17 @@ _unbind-service() {
 
 }
 
+_service() {
+
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+
+    if [[ "2" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "$(_cf_services)" -- "$cur"))
+        return
+    fi
+
+}
+
 _cf_main() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     COMPREPLY=($(compgen -W " \
@@ -251,11 +262,14 @@ _cf() {
     restart) _app ;;
     restage) _app ;;
     app) _app ;;
+    env) _app ;;
     logs) _logs ;;
     scale) _scale ;;
     delete) _app ;;
     bind-service) _bind-service ;;
     unbind-service) _unbind-service ;;
+
+    service) _service ;;
 
     ssh) _app ;;
     enable-ssh) _app ;;
