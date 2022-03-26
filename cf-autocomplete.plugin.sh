@@ -123,7 +123,7 @@ _create_app_manifest() {
     fi
 
     if [[ "4" -eq "$COMP_CWORD" ]]; then
-        COMPREPLY=($(compgen -W "manifest.yml" -- "$cur"))
+        COMPREPLY=($(compgen -W "manifest.yaml" -- "$cur"))
         return
     fi
 
@@ -214,6 +214,22 @@ _service() {
 
 }
 
+_update-service() {
+
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+
+    if [[ "2" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "$(_cf_services)" -- "$cur"))
+        return
+    fi
+
+    if [[ "3" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "-c" -- "$cur"))
+        return
+    fi
+
+}
+
 _cf_main() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     COMPREPLY=($(compgen -W " \
@@ -224,7 +240,7 @@ _cf_main() {
     update-service rename-service delete-service \
     create-service-key service-keys service-key delete-service-key bind-service unbind-service \
     create-user-provided-service update-user-provided-service \
-    orgs org create-org delete-org \ 
+    orgs org create-org delete-org \
     spaces space create-space delete-space space-users set-space-role unset-space-role \
     domains create-domain delete-domain create-shared-domain delete-shared-domain \
     routes create-route check-route map-route unmap-route delete-route delete-orphaned-routes \
@@ -236,6 +252,8 @@ _cf_main() {
     targets save-target set-target delete-target \
     allow-space-ssh disallow-space-ssh enable-ssh disable-ssh ssh \
     delete-autocomplete-cache \
+    service-manager-service-instances \
+    mta mtas mta-ops
     " -- "$cur"))
 }
 
@@ -266,10 +284,15 @@ _cf() {
     logs) _logs ;;
     scale) _scale ;;
     delete) _app ;;
+    set-env) _app ;;
     bind-service) _bind-service ;;
     unbind-service) _unbind-service ;;
 
     service) _service ;;
+    service-key) _service ;;
+    service-keys) _service ;;
+
+    update-service) _update-service ;;
 
     ssh) _app ;;
     enable-ssh) _app ;;
