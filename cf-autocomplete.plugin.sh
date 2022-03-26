@@ -45,7 +45,7 @@ _cf_services() {
     _execWithCache 'services' $'cf services | awk \'NR>3{print $1}\''
 }
 
-_cf_hostname() {
+_cf_hostnames() {
     _execWithCache 'services' $'cf routes | awk \'NR>3{print $2}\''
 }
 
@@ -161,7 +161,7 @@ _cf_map_route() {
     fi
 
     if [[ "5" -eq "$COMP_CWORD" ]]; then
-        COMPREPLY=($(compgen -W "$(_cf_hostname)" -- "$cur"))
+        COMPREPLY=($(compgen -W "$(_cf_hostnames)" -- "$cur"))
         return
     fi
 
@@ -188,6 +188,27 @@ _cf_create_route() {
 
     if [[ "5" -eq "$COMP_CWORD" ]]; then
         COMPREPLY=($(compgen -W "--path" -- "$cur"))
+        return
+    fi
+
+}
+
+_cf_delete_route() {
+
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+
+    if [[ "2" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "$(_cf_domains)" -- "$cur"))
+        return
+    fi
+
+    if [[ "3" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "--hostname" -- "$cur"))
+        return
+    fi
+
+    if [[ "4" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "$(_cf_hostnames)" -- "$cur"))
         return
     fi
 
@@ -333,7 +354,9 @@ _cf() {
 
     case "$cmd" in
     create-route) _cf_create_route ;;
+    delete-route) _cf_delete_route ;;
     map-route) _cf_map_route ;;
+
     create-app-manifest) _create_app_manifest ;;
     push) _app ;;
     start) _app ;;
