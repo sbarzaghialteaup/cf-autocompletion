@@ -293,6 +293,21 @@ _deploy() {
         return
     fi
 
+    if [[ "3" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "--strategy" -- "$cur"))
+        return
+    fi
+
+    if [[ "4" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "blue-green" -- "$cur"))
+        return
+    fi
+
+    if [[ "5" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "--skip-testing-phase --skip-idle-start" -- "$cur"))
+        return
+    fi
+
 }
 
 _undeploy() {
