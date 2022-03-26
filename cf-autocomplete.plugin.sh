@@ -245,6 +245,22 @@ _mta() {
 
 }
 
+_undeploy() {
+
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+
+    if [[ "2" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "$(_cf_mtas)" -- "$cur"))
+        return
+    fi
+
+    if [[ "3" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "--delete-services" -- "$cur"))
+        return
+    fi
+
+}
+
 _cf_main() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     COMPREPLY=($(compgen -W " \
@@ -268,7 +284,8 @@ _cf_main() {
     allow-space-ssh disallow-space-ssh enable-ssh disable-ssh ssh \
     delete-autocomplete-cache \
     service-manager-service-instances \
-    mta mtas mta-ops
+    mta mtas mta-ops \
+    undeploy
     " -- "$cur"))
 }
 
@@ -314,6 +331,7 @@ _cf() {
     disable-ssh) _app ;;
 
     mta) _mta ;;
+    undeploy) _undeploy ;;
 
     delete-autocomplete-cache) _deleteLocalCache ;;
     *) ;; esac
