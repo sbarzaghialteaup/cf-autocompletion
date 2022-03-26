@@ -45,8 +45,16 @@ _cf_services() {
     _execWithCache 'services' $'cf services | awk \'NR>3{print $1}\''
 }
 
+_cf_hostname() {
+    _execWithCache 'services' $'cf routes | awk \'NR>3{print $2}\''
+}
+
 _cf_mtas() {
     _execWithCache 'services' $'cf mtas | awk \'NR>3{print $1}\''
+}
+
+_cf_mta_archives() {
+    find . -iname "*.mtar"
 }
 
 _scale() {
@@ -143,11 +151,21 @@ _cf_map_route() {
     fi
 
     if [[ "3" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "$(_cf_domains)" -- "$cur"))
+        return
+    fi
+
+    if [[ "4" -eq "$COMP_CWORD" ]]; then
         COMPREPLY=($(compgen -W "--hostname" -- "$cur"))
         return
     fi
 
     if [[ "5" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "$(_cf_hostname)" -- "$cur"))
+        return
+    fi
+
+    if [[ "6" -eq "$COMP_CWORD" ]]; then
         COMPREPLY=($(compgen -W "--path" -- "$cur"))
         return
     fi
@@ -245,6 +263,17 @@ _mta() {
 
 }
 
+_deploy() {
+
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+
+    if [[ "2" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "$(_cf_mta_archives)" -- "$cur"))
+        return
+    fi
+
+}
+
 _undeploy() {
 
     local cur="${COMP_WORDS[COMP_CWORD]}"
@@ -285,7 +314,7 @@ _cf_main() {
     delete-autocomplete-cache \
     service-manager-service-instances \
     mta mtas mta-ops \
-    undeploy
+    deploy undeploy
     " -- "$cur"))
 }
 
@@ -331,6 +360,8 @@ _cf() {
     disable-ssh) _app ;;
 
     mta) _mta ;;
+
+    deploy) _deploy;;
     undeploy) _undeploy ;;
 
     delete-autocomplete-cache) _deleteLocalCache ;;
