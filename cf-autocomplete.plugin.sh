@@ -45,6 +45,10 @@ _cf_services() {
     _execWithCache 'services' $'cf services | awk \'NR>3{print $1}\''
 }
 
+_cf_mtas() {
+    _execWithCache 'services' $'cf mtas | awk \'NR>3{print $1}\''
+}
+
 _scale() {
 
     local cur="${COMP_WORDS[COMP_CWORD]}"
@@ -230,6 +234,17 @@ _update-service() {
 
 }
 
+_mta() {
+
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+
+    if [[ "2" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "$(_cf_mtas)" -- "$cur"))
+        return
+    fi
+
+}
+
 _cf_main() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     COMPREPLY=($(compgen -W " \
@@ -297,6 +312,8 @@ _cf() {
     ssh) _app ;;
     enable-ssh) _app ;;
     disable-ssh) _app ;;
+
+    mta) _mta ;;
 
     delete-autocomplete-cache) _deleteLocalCache ;;
     *) ;; esac
