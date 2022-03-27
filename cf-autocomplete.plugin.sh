@@ -46,11 +46,11 @@ _cf_services() {
 }
 
 _cf_hostnames() {
-    _execWithCache 'services' $'cf routes | awk \'NR>3{print $2}\''
+    _execWithCache 'hostnames' $'cf routes | awk \'NR>3{print $2}\''
 }
 
 _cf_mtas() {
-    _execWithCache 'services' $'cf mtas | awk \'NR>3{print $1}\''
+    _execWithCache 'mtas' $'cf mtas | awk \'NR>3{print $1}\''
 }
 
 _cf_mta_archives() {
