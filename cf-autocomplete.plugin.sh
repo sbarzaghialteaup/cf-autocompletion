@@ -57,6 +57,22 @@ _cf_mta_archives() {
     find . -iname "*.mtar"
 }
 
+_cf_json_files() {
+    find .  -maxdepth 2 -iname "*.json"
+}
+
+_cf_available_services() {
+    _execWithCache 'available_services' $'cf marketplace | awk \'NR>3{print $1}\''
+}
+
+_cf_available_service_plans() {
+    local service=$1
+    local cacheName="service_plans_$service"
+    local command="cf marketplace -e $service | awk 'NR>4{print \$1}'"
+
+     _execWithCache "$cacheName" "$command"
+}
+
 _scale() {
 
     local cur="${COMP_WORDS[COMP_CWORD]}"
@@ -257,6 +273,32 @@ _service() {
 
 }
 
+_create-service() {
+
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+
+    if [[ "2" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "$(_cf_available_services)" -- "$cur"))
+        return
+    fi
+
+    if [[ "3" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "$(_cf_available_service_plans "${COMP_WORDS[2]}")" -- "$cur"))
+        return
+    fi
+
+    if [[ "5" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "-c" -- "$cur"))
+        return
+    fi
+
+    if [[ "6" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "$(_cf_json_files)" -- "$cur"))
+        return
+    fi
+
+}
+
 _update-service() {
 
     local cur="${COMP_WORDS[COMP_CWORD]}"
@@ -391,6 +433,7 @@ _cf() {
     service-key) _service ;;
     service-keys) _service ;;
 
+    create-service) _create-service ;;
     update-service) _update-service ;;
 
     ssh) _app ;;
