@@ -315,6 +315,17 @@ _update-service() {
 
 }
 
+_delete-service() {
+
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+
+    if [[ "2" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "$(_cf_services)" -- "$cur"))
+        return
+    fi
+
+}
+
 _mta() {
 
     local cur="${COMP_WORDS[COMP_CWORD]}"
@@ -435,6 +446,7 @@ _cf() {
 
     create-service) _create-service ;;
     update-service) _update-service ;;
+    delete-service) _delete-service ;;
 
     ssh) _app ;;
     enable-ssh) _app ;;
