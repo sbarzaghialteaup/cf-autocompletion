@@ -379,6 +379,17 @@ _undeploy() {
 
 }
 
+_service-manager-service-instances() {
+
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+
+    if [[ "2" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "--credentials" -- "$cur"))
+        return
+    fi
+
+}
+
 _cf_main() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     COMPREPLY=($(compgen -W " \
@@ -456,6 +467,8 @@ _cf() {
 
     deploy) _deploy;;
     undeploy) _undeploy ;;
+
+    service-manager-service-instances) _service-manager-service-instances ;;
 
     delete-autocomplete-cache) _deleteLocalCache ;;
     *) ;; esac
