@@ -55,6 +55,7 @@ _cf_mtas() {
 
 _cf_mta_archives() {
     find . -iname "*.mtar"
+    echo "-i"
 }
 
 _cf_json_files() {
@@ -71,6 +72,10 @@ _cf_available_service_plans() {
     local command="cf marketplace -e $service | awk 'NR>4{print \$1}'"
 
      _execWithCache "$cacheName" "$command"
+}
+
+_cf_mta_operations() {
+    cf mta-ops | awk 'NR>3{print $1}'
 }
 
 _scale() {
@@ -346,6 +351,24 @@ _deploy() {
         return
     fi
 
+    if [[ "-i" = "${COMP_WORDS[2]}" ]]; then
+        _deploy_actions
+        return
+    fi
+
+    _deploy_deploy
+
+}
+
+_deploy_deploy() {
+
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+
+    if [[ "2" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "$(_cf_mta_archives)" -- "$cur"))
+        return
+    fi
+
     if [[ "3" -eq "$COMP_CWORD" ]]; then
         COMPREPLY=($(compgen -W "--strategy" -- "$cur"))
         return
@@ -357,7 +380,41 @@ _deploy() {
     fi
 
     if [[ "5" -eq "$COMP_CWORD" ]]; then
+
         COMPREPLY=($(compgen -W "--skip-testing-phase --skip-idle-start" -- "$cur"))
+        return
+    fi
+
+    if [[ "6" -eq "$COMP_CWORD" ]]; then
+
+        if [[ "--skip-testing-phase" = "${COMP_WORDS[5]}" ]]; then
+            OPTIONS="--skip-idle-start"
+        else
+            OPTIONS="--skip-testing-phase"
+        fi
+
+        COMPREPLY=($(compgen -W "$OPTIONS" -- "$cur"))
+        return
+    fi
+
+}
+
+_deploy_actions() {
+
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+
+    if [[ "3" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "$(_cf_mta_operations)" -- "$cur"))
+        return
+    fi
+
+    if [[ "4" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "-a" -- "$cur"))
+        return
+    fi
+
+    if [[ "5" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "abort retry resume monitor" -- "$cur"))
         return
     fi
 
