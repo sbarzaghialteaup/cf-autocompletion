@@ -78,6 +78,10 @@ _cf_mta_operations() {
     cf mta-ops | awk 'NR>3{print $1}'
 }
 
+_cf_spaces() {
+    _execWithCache 'spaces' $'cf spaces | awk \'NR>3{print $1}\''
+}
+
 _scale() {
 
     local cur="${COMP_WORDS[COMP_CWORD]}"
@@ -447,6 +451,16 @@ _service-manager-service-instances() {
 
 }
 
+_cf_delete_space() {
+
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+
+    if [[ "2" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "$(_cf_spaces)" -- "$cur"))
+        return
+    fi
+
+}
 _cf_main() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     COMPREPLY=($(compgen -W " \
@@ -524,6 +538,8 @@ _cf() {
 
     deploy) _deploy;;
     undeploy) _undeploy ;;
+
+    delete-space) _cf_delete_space;;
 
     service-manager-service-instances) _service-manager-service-instances ;;
 
