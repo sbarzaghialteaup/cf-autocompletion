@@ -61,7 +61,7 @@ _cf_mta_archives() {
 }
 
 _cf_json_files() {
-    find .  -maxdepth 2 -iname "*.json"
+    find . -maxdepth 2 -iname "*.json"
 }
 
 _cf_available_services() {
@@ -73,7 +73,7 @@ _cf_available_service_plans() {
     local cacheName="service_plans_$service"
     local command="cf marketplace -e $service | awk 'NR>4{print \$1}'"
 
-     _execWithCache "$cacheName" "$command"
+    _execWithCache "$cacheName" "$command"
 }
 
 _cf_mta_operations() {
@@ -538,10 +538,10 @@ _cf() {
 
     mta) _mta ;;
 
-    deploy) _deploy;;
+    deploy) _deploy ;;
     undeploy) _undeploy ;;
 
-    delete-space) _cf_delete_space;;
+    delete-space) _cf_delete_space ;;
 
     service-manager-service-instances) _service-manager-service-instances ;;
 
