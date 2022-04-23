@@ -3,6 +3,8 @@
 
 _deleteLocalCache() {
     rm -rf ~/cf.cache/*
+
+    printf "\nCache cleared"
 }
 
 _loadCache() {
