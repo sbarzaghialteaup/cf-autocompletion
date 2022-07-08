@@ -467,7 +467,7 @@ _cf_main() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     COMPREPLY=($(compgen -W " \
     login logout passwd help target api auth \
-    apps app push scale delete rename start stop restart restage restart-app-instance \
+    apps app push scale delete rename start stop restart restage restart-app-instance droplets download-droplet\
     events files logs env set-env unset-env stacks \
     stack copy-source create-app-manifest marketplace services service create-service \
     update-service rename-service delete-service \
@@ -521,6 +521,8 @@ _cf() {
     scale) _scale ;;
     delete) _app ;;
     set-env) _app ;;
+    droplets) _app ;;
+    download-droplet) _app ;;
     bind-service) _bind-service ;;
     unbind-service) _unbind-service ;;
 
