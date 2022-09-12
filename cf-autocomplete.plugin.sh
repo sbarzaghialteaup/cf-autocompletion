@@ -147,6 +147,27 @@ _app() {
 
 }
 
+_ssh() {
+
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+
+    if [[ "2" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "$(_cf_apps)" -- "$cur"))
+        return
+    fi
+
+    if [[ "3" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "-L" -- "$cur"))
+        return
+    fi
+
+    if [[ "4" -eq "$COMP_CWORD" ]]; then
+        COMPREPLY=($(compgen -W "9229:localhost:9229" -- "$cur"))
+        return
+    fi
+
+}
+
 _create_app_manifest() {
 
     local cur="${COMP_WORDS[COMP_CWORD]}"
@@ -534,7 +555,7 @@ _cf() {
     update-service) _update-service ;;
     delete-service) _delete-service ;;
 
-    ssh) _app ;;
+    ssh) _ssh ;;
     enable-ssh) _app ;;
     disable-ssh) _app ;;
 
